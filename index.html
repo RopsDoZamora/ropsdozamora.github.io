@@ -110,26 +110,26 @@
 
         <div id="compra" class="section active">
             <div class="calc-group">
-                <label for="precoROP">Informe o preço que deseja pagar por 1000 ROPs (R$):</label>
-                <input type="number" id="precoROP" value="0.29" step="0.01" onchange="atualizarPrecoCliente()">
+                <label for="precoROP">Valor atual (VENDA) de 1k de Rops:</label>
+                <input type="number" id="precoROP" value="0.29" step="0.01" readonly>
             </div>
             <div class="calc-group">
                 <label for="valor">Digite quanto quer investir, em R$:</label>
                 <input type="number" id="valor" placeholder="Ex: 100" step="0.01">
-                <button onclick="calcularROPs()">Calcular ROPs</button>
+                <button onclick="calcularROPs()">Calcular ROPs a comprar</button>
             </div>
             <div class="calc-group">
                 <label for="ks">Digite quantos k's de ROPs você quer comprar:</label>
                 <input type="number" id="ks" placeholder="Ex: 2.5" step="0.1">
-                <button onclick="calcularValorPorKs()">Calcular valor</button>
+                <button onclick="calcularValorPorKs()">Calcular valor a pagar</button>
             </div>
             <button onclick="limparHistorico()">🧹 Limpar histórico</button>
         </div>
 
         <div id="venda" class="section">
             <div class="calc-group">
-                <label for="precoCompra">Informe o valor que deseja receber por 1000 ROPs (R$):</label>
-                <input type="number" id="precoCompra" value="0.25" step="0.01" onchange="atualizarPrecoCompra()">
+                <label for="precoCompra">Valor atual (COMPRA) de 1k de Rops:</label>
+                <input type="number" id="precoCompra" value="0.25" step="0.01" readonly>
             </div>
             <div class="calc-group">
                 <label for="valorReceber">Digite quanto quer receber, em R$:</label>
@@ -139,7 +139,7 @@
             <div class="calc-group">
                 <label for="rops">Digite quantos k's de ROPs você quer vender:</label>
                 <input type="number" id="rops" placeholder="Ex: 1500" step="1">
-                <button onclick="calcularReais()">Calcular Valor Recebido</button>
+                <button onclick="calcularReais()">Calcular Valor a receber</button>
             </div>
             <button onclick="limparHistorico()">🧹 Limpar histórico</button>
         </div>
@@ -163,26 +163,28 @@
         }
 
         function calcularValorPorKs() {
-            const ks = parseFloat(document.getElementById('ks').value);
-            if (isNaN(ks) || ks <= 0) {
-                document.getElementById('resultado').innerText = 'Digite um valor válido de k ROPs.';
+            const ksLiquidoDesejado = parseFloat(document.getElementById('ks').value);
+            if (isNaN(ksLiquidoDesejado) || ksLiquidoDesejado <= 0) {
+                document.getElementById('resultado').innerText = 'Digite um valor válido de k ROPs que você quer receber.';
                 return;
             }
 
             const precoUnitario = precoClientePorMil;
-            const ropsDesejados = ks * 1000;
-            const ropsComTaxa = Math.ceil(ropsDesejados / 0.95);
-            const valorTotal = parseFloat(((ropsComTaxa / 1000) * precoUnitario).toFixed(2));
+            const ksBrutoExato = ksLiquidoDesejado / 0.95; // Calcula o KS bruto antes da taxa
+            const ksBrutoArredondado = Math.ceil(ksBrutoExato); // Arredonda para cima o KS bruto
+            const ropsBrutoArredondado = ksBrutoArredondado * 1000;
+            const valorTotal = parseFloat((ksBrutoArredondado * precoUnitario).toFixed(2)); // Calcula o valor pelo KS bruto arredondado
 
             document.getElementById('resultado').innerHTML = `
-                Você quer comprar <strong>${ks.toLocaleString('pt-BR')}</strong>k ROPs<br>
-                🔹 Com taxa, vou te entregar: <strong>${ropsComTaxa.toLocaleString('pt-BR')}</strong> ROPs<br>
-                🔹 Total a pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong><br>
-                🪙 <em>${Math.floor(ropsComTaxa / 100000)} Roxas e ${Math.floor((ropsComTaxa % 100000) / 1000)} Laranjas</em>
+                Você quer comprar <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong><br>
+                🔹 Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsBrutoArredondado.toLocaleString('pt-BR')})<br>
+                🔹 Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong> ROPs<br>
+                🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em>
             `;
 
             const li = document.createElement('li');
-            li.textContent = `${ks.toLocaleString('pt-BR')}k ROPs → total R$ ${valorTotal.toLocaleString('pt-BR')}`;
+            li.textContent = `${ksLiquidoDesejado.toLocaleString('pt-BR')}k (quer receber) → pagar R$ ${valorTotal.toLocaleString('pt-BR')}, entregar ${ksBrutoArredondado.toLocaleString('pt-BR')}k`;
             document.getElementById('log').prepend(li);
         }
 
@@ -194,42 +196,47 @@
             }
 
             const precoUnitario = precoClientePorMil;
-            const ropsRecebidos = Math.floor((valor / precoUnitario) * 1000);
-            const ropsLiquido = Math.floor(ropsRecebidos * 0.95);
+            const ropsExatos = (valor / precoUnitario) * 1000;
+            const ropsArredondado = Math.ceil(ropsExatos / 1000) * 1000; // Arredonda para a próxima milhar
+            const kRopsArredondado = ropsArredondado / 1000;
+            const ropsLiquido = Math.floor(ropsArredondado * 0.95); // Calcula o líquido com base no valor arredondado
 
             document.getElementById('resultado').innerHTML = `
                 Você quer investir <strong>R$ ${valor.toLocaleString('pt-BR')}</strong><br>
+                🔹 Vou te entregar: <strong>${kRopsArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsArredondado.toLocaleString('pt-BR')})<br>
+                🪙 <em>${Math.floor(ropsArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsArredondado % 100000) / 1000)} Moedas Laranjas</em><br>
                 🔹 Você receberá: <strong>${ropsLiquido.toLocaleString('pt-BR')}</strong> ROPs (com 5% de taxa)<br>
-                🔹 Vou te entregar: <strong>${ropsRecebidos.toLocaleString('pt-BR')}</strong> ROPs<br>
-                🪙 <em>${Math.floor(ropsRecebidos / 100000)} Roxas e ${Math.floor((ropsRecebidos % 100000) / 1000)} Laranjas</em>
             `;
 
             const li = document.createElement('li');
-            li.textContent = `R$ ${valor.toLocaleString('pt-BR')} → recebe ${ropsLiquido.toLocaleString('pt-BR')} ROPs (entrega ${ropsRecebidos.toLocaleString('pt-BR')})`;
+            li.textContent = `R$ ${valor.toLocaleString('pt-BR')} → entrega ${kRopsArredondado.toLocaleString('pt-BR')}k (${ropsArredondado.toLocaleString('pt-BR')}), recebe ${ropsLiquido.toLocaleString('pt-BR')} ROPs`;
             document.getElementById('log').prepend(li);
         }
 
         function calcularReais() {
-            const rops = parseFloat(document.getElementById('rops').value) * 1000;
-            if (isNaN(rops) || rops <= 0) {
+            const ropsInformado = parseFloat(document.getElementById('rops').value) * 1000;
+            if (isNaN(ropsInformado) || ropsInformado <= 0) {
                 document.getElementById('resultado').innerText = 'Digite uma quantidade válida de ROPs.';
                 return;
             }
 
             const precoUnitario = precoCompraPorMil;
-            const ksInformado = Math.ceil(rops / 1000);
-            const ksLiquido = parseFloat((ksInformado * 0.95).toFixed(2));
-            const valorPagar = parseFloat((ksLiquido * precoUnitario).toFixed(2));
+            const ksBrutoExato = ropsInformado / 1000;
+            const ksBrutoArredondado = Math.ceil(ksBrutoExato); // Arredonda para cima o KS bruto
+            const ropsBrutoArredondado = ksBrutoArredondado * 1000;
+            const ksLiquidoExato = ksBrutoArredondado * 0.95;
+            const valorPagarExato = ksLiquidoExato * precoUnitario;
+            const valorPagarArredondado = Math.floor(valorPagarExato * 100) / 100; // Arredonda para baixo para duas casas decimais
 
             document.getElementById('resultado').innerHTML = `
-                Você quer vender <strong>${ksInformado.toLocaleString('pt-BR')}</strong>k ROPs<br>
-                🔹 Você deverá me enviar: <strong>${ksInformado.toLocaleString('pt-BR')}</strong>k ROPs<br>
-                🔹 Após 5%, vou receber: <strong>${ksLiquido.toLocaleString('pt-BR')}</strong>k ROPs<br>
-                🔹 Vou te pagar: <strong>R$ ${valorPagar.toLocaleString('pt-BR')}</strong>
+                Você quer vender <strong>${ksBrutoExato.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Você deverá me enviar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsBrutoArredondado.toLocaleString('pt-BR')})<br>
+                🔹 Após 5%, vou receber: <strong>${ksLiquidoExato.toFixed(2).toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Vou te pagar: <strong>R$ ${valorPagarArredondado.toLocaleString('pt-BR')}</strong>
             `;
 
             const li = document.createElement('li');
-            li.textContent = `${ksInformado.toLocaleString('pt-BR')}k ROPs → líquido ${ksLiquido.toLocaleString('pt-BR')}k — pago R$ ${valorPagar.toLocaleString('pt-BR')}`;
+            li.textContent = `${ksBrutoExato.toLocaleString('pt-BR')}k ROPs → enviar ${ksBrutoArredondado.toLocaleString('pt-BR')}k, pago R$ ${valorPagarArredondado.toLocaleString('pt-BR')}`;
             document.getElementById('log').prepend(li);
         }
 
