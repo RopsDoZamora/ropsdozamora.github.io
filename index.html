@@ -176,7 +176,7 @@
             const valorTotal = parseFloat((ksBrutoArredondado * precoUnitario).toFixed(2)); // Calcula o valor pelo KS bruto arredondado
 
             document.getElementById('resultado').innerHTML = `
-                Você quer comprar <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                Você quer comprar <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong> ROPs<br>
                 🔹 Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong><br>
                 🔹 Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsBrutoArredondado.toLocaleString('pt-BR')})<br>
                 🔹 Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong> ROPs<br>
@@ -184,7 +184,7 @@
             `;
 
             const li = document.createElement('li');
-            li.textContent = `${ksLiquidoDesejado.toLocaleString('pt-BR')}k (quer receber) → pagar R$ ${valorTotal.toLocaleString('pt-BR')}, entregar ${ksBrutoArredondado.toLocaleString('pt-BR')}k`;
+            li.innerHTML = `Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong>, Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong>`;
             document.getElementById('log').prepend(li);
         }
 
@@ -196,20 +196,21 @@
             }
 
             const precoUnitario = precoClientePorMil;
-            const ropsExatos = (valor / precoUnitario) * 1000;
-            const ropsArredondado = Math.ceil(ropsExatos / 1000) * 1000; // Arredonda para a próxima milhar
-            const kRopsArredondado = ropsArredondado / 1000;
-            const ropsLiquido = Math.floor(ropsArredondado * 0.95); // Calcula o líquido com base no valor arredondado
+            const ropsBrutoExato = (valor / precoUnitario) * 1000; // Calcula ROPs brutos com o valor investido
+            const ropsBrutoArredondado = Math.ceil(ropsBrutoExato / 1000) * 1000; // Arredonda para a próxima milhar
+            const kRopsBrutoArredondado = ropsBrutoArredondado / 1000;
+            const ropsLiquido = Math.floor(ropsBrutoArredondado * 0.95); // Calcula o líquido APÓS a taxa
 
             document.getElementById('resultado').innerHTML = `
                 Você quer investir <strong>R$ ${valor.toLocaleString('pt-BR')}</strong><br>
-                🔹 Vou te entregar: <strong>${kRopsArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsArredondado.toLocaleString('pt-BR')})<br>
-                🪙 <em>${Math.floor(ropsArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsArredondado % 100000) / 1000)} Moedas Laranjas</em><br>
-                🔹 Você receberá: <strong>${ropsLiquido.toLocaleString('pt-BR')}</strong> ROPs (com 5% de taxa)<br>
+                🔹 Você vai pagar: <strong>R$ ${valor.toLocaleString('pt-BR')}</strong> (valor investido)<br>
+                🔹 Eu vou te entregar: <strong>${kRopsBrutoArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsBrutoArredondado.toLocaleString('pt-BR')})<br>
+                🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em><br>
+                🔹 Após as taxas, você vai receber: <strong>${Math.floor(ropsLiquido / 1000).toLocaleString('pt-BR')}k</strong> ROPs (${ropsLiquido.toLocaleString('pt-BR')})<br>
             `;
 
             const li = document.createElement('li');
-            li.textContent = `R$ ${valor.toLocaleString('pt-BR')} → entrega ${kRopsArredondado.toLocaleString('pt-BR')}k (${ropsArredondado.toLocaleString('pt-BR')}), recebe ${ropsLiquido.toLocaleString('pt-BR')} ROPs`;
+            li.innerHTML = `Você vai pagar: <strong>R$ ${valor.toLocaleString('pt-BR')}</strong> (valor investido), Eu vou te entregar: <strong>${kRopsBrutoArredondado.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${Math.floor(ropsLiquido / 1000).toLocaleString('pt-BR')}k</strong>`;
             document.getElementById('log').prepend(li);
         }
 
@@ -229,14 +230,14 @@
             const valorPagarArredondado = Math.floor(valorPagarExato * 100) / 100; // Arredonda para baixo para duas casas decimais
 
             document.getElementById('resultado').innerHTML = `
-                Você quer vender <strong>${ksBrutoExato.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                Você quer vender <strong>${ksBrutoExato.toLocaleString('pt-BR')}k</strong> ROPs<br>
                 🔹 Você deverá me enviar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsBrutoArredondado.toLocaleString('pt-BR')})<br>
-                🔹 Após 5%, vou receber: <strong>${ksLiquidoExato.toFixed(2).toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Após 5%, vou receber: <strong>${ksLiquidoExato.toFixed(2).toLocaleString('pt-BR')}k</strong> ROPs<br>
                 🔹 Vou te pagar: <strong>R$ ${valorPagarArredondado.toLocaleString('pt-BR')}</strong>
             `;
 
             const li = document.createElement('li');
-            li.textContent = `${ksBrutoExato.toLocaleString('pt-BR')}k ROPs → enviar ${ksBrutoArredondado.toLocaleString('pt-BR')}k, pago R$ ${valorPagarArredondado.toLocaleString('pt-BR')}`;
+            li.innerHTML = `${ksBrutoExato.toLocaleString('pt-BR')}k ROPs → enviar <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, pago R$ ${valorPagarArredondado.toLocaleString('pt-BR')}`;
             document.getElementById('log').prepend(li);
         }
 
@@ -254,13 +255,13 @@
 
             document.getElementById('resultado').innerHTML = `
                 Você quer receber <strong>R$ ${valorDesejado.toLocaleString('pt-BR')}</strong><br>
-                🔹 Você deverá me enviar: <strong>${ksBruto.toLocaleString('pt-BR')}</strong>k ROPs<br>
-                🔹 Após 5%, vou receber: <strong>${ksLiquido.toFixed(2).toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Você deverá me enviar: <strong>${ksBruto.toLocaleString('pt-BR')}k</strong> ROPs<br>
+                🔹 Após 5%, vou receber: <strong>${ksLiquido.toFixed(2).toLocaleString('pt-BR')}k</strong> ROPs<br>
                 🔹 Total: <strong>${rops.toLocaleString('pt-BR')}</strong> ROPs
             `;
 
             const li = document.createElement('li');
-            li.textContent = `Receber R$ ${valorDesejado.toLocaleString('pt-BR')} → enviar ${ksBruto.toLocaleString('pt-BR')}k ROPs`;
+            li.innerHTML = `Receber R$ ${valorDesejado.toLocaleString('pt-BR')} → enviar <strong>${ksBruto.toLocaleString('pt-BR')}k</strong> ROPs`;
             document.getElementById('log').prepend(li);
         }
 
