@@ -1,198 +1,279 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rops do Zamora</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      padding: 20px;
-      color: #333;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    h1 {
-      text-align: center;
-      margin-top: 40px;
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .tabs button {
-      padding: 10px 20px;
-      background-color: #e9ecef;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .tabs button.active {
-      background-color: #0d6efd;
-      color: white;
-    }
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-    .calc-group {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px;
-      width: 100%;
-      background: #0d6efd;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .resultado, .historico {
-      background: #eee;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rops do Zamora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tabs button {
+            padding: 10px 20px;
+            background-color: #e9ecef;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .tabs button.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .calc-group {
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .calc-group label {
+            grid-column: 1;
+            text-align: left;
+            margin-top: 0;
+        }
+        .calc-group input {
+            grid-column: 2;
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-top: 0;
+        }
+        .calc-group button {
+            grid-column: 2;
+            width: 100%;
+            padding: 10px;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .section > button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background: #6c757d;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .resultado, .historico {
+            background: #eee;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Rops do Zamora</h1>
-    <p style="text-align: center; margin-top: -10px;">
-      🟢 <a href="https://wa.me/5511947185134" target="_blank">Me chame no WhatsApp</a><br>
-      🟣 <a href="https://discord.com/users/349607592605253633" target="_blank">Fale comigo no Discord</a>
-    </p>
+    <div class="container">
+        <h1>Rops do Zamora</h1>
+        <p style="text-align: center; margin-top: -10px;">
+            🟢 <a href="https://wa.me/5511947185134" target="_blank">Me chame no WhatsApp</a><br>
+            🟣 <a href="https://discord.com/users/349607592605253633" target="_blank">Fale comigo no Discord</a>
+        </p>
 
-    <div class="tabs">
-      <button id="tab-compra" class="active" onclick="mostrarSecao('compra')">💸 Quero comprar</button>
-      <button id="tab-venda" onclick="mostrarSecao('venda')">💰 Quero vender</button>
+        <div class="tabs">
+            <button id="tab-compra" class="active" onclick="mostrarSecao('compra')">💸 Quero comprar</button>
+            <button id="tab-venda" onclick="mostrarSecao('venda')">💰 Quero vender</button>
+        </div>
+
+        <div id="compra" class="section active">
+            <div class="calc-group">
+                <label for="precoROP">Informe o preço que deseja pagar por 1000 ROPs (R$):</label>
+                <input type="number" id="precoROP" value="0.29" step="0.01" onchange="atualizarPrecoCliente()">
+            </div>
+            <div class="calc-group">
+                <label for="valor">Digite quanto quer investir, em R$:</label>
+                <input type="number" id="valor" placeholder="Ex: 100" step="0.01">
+                <button onclick="calcularROPs()">Calcular ROPs</button>
+            </div>
+            <div class="calc-group">
+                <label for="ks">Digite quantos k's de ROPs você quer comprar:</label>
+                <input type="number" id="ks" placeholder="Ex: 2.5" step="0.1">
+                <button onclick="calcularValorPorKs()">Calcular valor</button>
+            </div>
+            <button onclick="limparHistorico()">🧹 Limpar histórico</button>
+        </div>
+
+        <div id="venda" class="section">
+            <div class="calc-group">
+                <label for="precoCompra">Informe o valor que deseja receber por 1000 ROPs (R$):</label>
+                <input type="number" id="precoCompra" value="0.25" step="0.01" onchange="atualizarPrecoCompra()">
+            </div>
+            <div class="calc-group">
+                <label for="valorReceber">Digite quanto quer receber, em R$:</label>
+                <input type="number" id="valorReceber" placeholder="Ex: 50" step="0.01">
+                <button onclick="calcularPorValorDesejado()">Calcular ROPs a vender</button>
+            </div>
+            <div class="calc-group">
+                <label for="rops">Digite quantos k's de ROPs você quer vender:</label>
+                <input type="number" id="rops" placeholder="Ex: 1500" step="1">
+                <button onclick="calcularReais()">Calcular Valor Recebido</button>
+            </div>
+            <button onclick="limparHistorico()">🧹 Limpar histórico</button>
+        </div>
+
+        <div class="resultado" id="resultado"></div>
+        <div class="historico" id="historico"><strong>Histórico:</strong><ul id="log"></ul></div>
     </div>
 
-    <div id="compra" class="section active">
-      <div class="calc-group">
-        <label for="precoROP">Informe o preço que deseja usar por 1000 ROPs (R$):</label>
-        <input type="number" id="precoROP" value="0.29" step="0.01" onchange="atualizarPrecoCliente()">
-      </div>
-      <div class="calc-group">
-        <label for="ks">Quantos k's ROPs deseja comprar?</label>
-        <input type="number" id="ks" placeholder="Ex: 2.5" step="0.1">
-        <button onclick="calcularValorPorKs()">Calcular valor</button>
-      </div>
-      <div class="calc-group">
-        <label for="valor">Digite quanto tem em R$:</label>
-        <input type="number" id="valor" placeholder="Ex: 100" step="0.01">
-        <button onclick="calcularROPs()">Calcular ROPs</button>
-      </div>
-    </div>
+    <script>
+        const taxa = 1.05;
+        let precoClientePorMil = parseFloat(document.getElementById('precoROP').value);
+        let precoCompraPorMil = parseFloat(document.getElementById('precoCompra').value);
 
-    <div id="venda" class="section">
-      <div class="calc-group">
-        <label for="precoCompra">Informe o valor que deseja pagar por 1000 ROPs (R$):</label>
-        <input type="number" id="precoCompra" value="0.25" step="0.01" onchange="atualizarPrecoCompra()">
-      </div>
-      <div class="calc-group">
-        <label for="rops">Digite quantos ROPs quer vender:</label>
-        <input type="number" id="rops" placeholder="Ex: 1500" step="1">
-        <button onclick="calcularReais()">Calcular Valor Recebido</button>
-      </div>
-    </div>
+        function mostrarSecao(secao) {
+            document.getElementById('compra').classList.remove('active');
+            document.getElementById('venda').classList.remove('active');
+            document.getElementById('tab-compra').classList.remove('active');
+            document.getElementById('tab-venda').classList.remove('active');
+            document.getElementById(secao).classList.add('active');
+            document.getElementById(`tab-${secao}`).classList.add('active');
+        }
 
-    <div class="resultado" id="resultado"></div>
-    <div class="historico" id="historico"><strong>Histórico:</strong><ul id="log"></ul></div>
-  </div>
+        function calcularValorPorKs() {
+            const ks = parseFloat(document.getElementById('ks').value);
+            if (isNaN(ks) || ks <= 0) {
+                document.getElementById('resultado').innerText = 'Digite um valor válido de k ROPs.';
+                return;
+            }
 
-  <script>
-    function mostrarSecao(secao) {
-      document.getElementById('compra').classList.remove('active');
-      document.getElementById('venda').classList.remove('active');
-      document.getElementById('tab-compra').classList.remove('active');
-      document.getElementById('tab-venda').classList.remove('active');
-      document.getElementById(secao).classList.add('active');
-      document.getElementById(`tab-${secao}`).classList.add('active');
-    }
+            const precoUnitario = precoClientePorMil;
+            const ropsDesejados = ks * 1000;
+            const ropsComTaxa = Math.ceil(ropsDesejados / 0.95);
+            const valorTotal = parseFloat(((ropsComTaxa / 1000) * precoUnitario).toFixed(2));
 
-    function calcularROPs() {
-      const valor = parseFloat(document.getElementById('valor').value);
-      if (isNaN(valor) || valor <= 0) {
-        document.getElementById('resultado').innerText = 'Por favor, digite um valor válido.';
-        return;
-      }
-      const precoUnitario = (precoClientePorMil / 1000) * taxa;
-      const rops = Math.ceil(valor / precoUnitario);
-      document.getElementById('resultado').innerHTML = `Com R$ ${valor.toFixed(2)}, você pode comprar <strong>${rops.toLocaleString('pt-BR')}</strong> ROPs.`;
-      const li = document.createElement('li');
-      li.textContent = `R$ ${valor.toFixed(2)} → ${rops.toLocaleString('pt-BR')} ROPs`;
-      document.getElementById('log').prepend(li);
-    }
+            document.getElementById('resultado').innerHTML = `
+                Você quer comprar <strong>${ks.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Com taxa, vou te entregar: <strong>${ropsComTaxa.toLocaleString('pt-BR')}</strong> ROPs<br>
+                🔹 Total a pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong><br>
+                🪙 <em>${Math.floor(ropsComTaxa / 100000)} Roxas e ${Math.floor((ropsComTaxa % 100000) / 1000)} Laranjas</em>
+            `;
 
-    function calcularValorPorKs() {
-      const ks = parseFloat(document.getElementById('ks').value);
-      if (isNaN(ks) || ks <= 0) {
-        document.getElementById('resultado').innerText = 'Digite um valor válido de milheiros.';
-        return;
-      }
-      const totalRops = Math.ceil(ks * 1000 * taxa);
-      const valor = totalRops * (precoClientePorMil / 1000);
-      document.getElementById('resultado').innerHTML = `${ks.toFixed(2)}k ROPs (entrega total: <strong>${totalRops.toLocaleString('pt-BR')}</strong>) custarão <strong>R$ ${valor.toFixed(2)}</strong>.`;
-      const li = document.createElement('li');
-      li.textContent = `${ks.toFixed(2)}k ROPs → R$ ${valor.toFixed(2)} (entrega: ${totalRops})`;
-      document.getElementById('log').prepend(li);
-    }
+            const li = document.createElement('li');
+            li.textContent = `${ks.toLocaleString('pt-BR')}k ROPs → total R$ ${valorTotal.toLocaleString('pt-BR')}`;
+            document.getElementById('log').prepend(li);
+        }
 
-    function calcularReais() {
-      const rops = parseFloat(document.getElementById('rops').value);
-      if (isNaN(rops) || rops <= 0) {
-        document.getElementById('resultado').innerText = 'Digite uma quantidade válida de ROPs.';
-        return;
-      }
-      const precoUnitario = precoCompraPorMil / 1000;
-      const valor = Math.floor((rops * precoUnitario) / taxa * 100) / 100;
-      document.getElementById('resultado').innerHTML = `Vendendo ${rops.toLocaleString('pt-BR')} ROPs, você receberá <strong>R$ ${valor.toFixed(2)}</strong>.`;
-      const li = document.createElement('li');
-      li.textContent = `${rops.toLocaleString('pt-BR')} ROPs → R$ ${valor.toFixed(2)}`;
-      document.getElementById('log').prepend(li);
-    }
+        function calcularROPs() {
+            const valor = parseFloat(document.getElementById('valor').value);
+            if (isNaN(valor) || valor <= 0) {
+                document.getElementById('resultado').innerText = 'Digite um valor válido em R$.';
+                return;
+            }
 
-    function atualizarPrecoCliente() {
-      const novoPreco = parseFloat(document.getElementById('precoROP').value);
-      if (!isNaN(novoPreco) && novoPreco > 0) {
-        precoClientePorMil = novoPreco;
-      }
-    }
+            const precoUnitario = precoClientePorMil;
+            const ropsRecebidos = Math.floor((valor / precoUnitario) * 1000);
+            const ropsLiquido = Math.floor(ropsRecebidos * 0.95);
 
-    function atualizarPrecoCompra() {
-      const novoPreco = parseFloat(document.getElementById('precoCompra').value);
-      if (!isNaN(novoPreco) && novoPreco > 0) {
-        precoCompraPorMil = novoPreco;
-      }
-    }
+            document.getElementById('resultado').innerHTML = `
+                Você quer investir <strong>R$ ${valor.toLocaleString('pt-BR')}</strong><br>
+                🔹 Você receberá: <strong>${ropsLiquido.toLocaleString('pt-BR')}</strong> ROPs (com 5% de taxa)<br>
+                🔹 Vou te entregar: <strong>${ropsRecebidos.toLocaleString('pt-BR')}</strong> ROPs<br>
+                🪙 <em>${Math.floor(ropsRecebidos / 100000)} Roxas e ${Math.floor((ropsRecebidos % 100000) / 1000)} Laranjas</em>
+            `;
 
-    const taxa = 1.05;
-    let precoClientePorMil = parseFloat(document.getElementById('precoROP').value);
-    let precoCompraPorMil = parseFloat(document.getElementById('precoCompra').value);
-  </script>
+            const li = document.createElement('li');
+            li.textContent = `R$ ${valor.toLocaleString('pt-BR')} → recebe ${ropsLiquido.toLocaleString('pt-BR')} ROPs (entrega ${ropsRecebidos.toLocaleString('pt-BR')})`;
+            document.getElementById('log').prepend(li);
+        }
+
+        function calcularReais() {
+            const rops = parseFloat(document.getElementById('rops').value) * 1000;
+            if (isNaN(rops) || rops <= 0) {
+                document.getElementById('resultado').innerText = 'Digite uma quantidade válida de ROPs.';
+                return;
+            }
+
+            const precoUnitario = precoCompraPorMil;
+            const ksInformado = Math.ceil(rops / 1000);
+            const ksLiquido = parseFloat((ksInformado * 0.95).toFixed(2));
+            const valorPagar = parseFloat((ksLiquido * precoUnitario).toFixed(2));
+
+            document.getElementById('resultado').innerHTML = `
+                Você quer vender <strong>${ksInformado.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Você deverá me enviar: <strong>${ksInformado.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Após 5%, vou receber: <strong>${ksLiquido.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Vou te pagar: <strong>R$ ${valorPagar.toLocaleString('pt-BR')}</strong>
+            `;
+
+            const li = document.createElement('li');
+            li.textContent = `${ksInformado.toLocaleString('pt-BR')}k ROPs → líquido ${ksLiquido.toLocaleString('pt-BR')}k — pago R$ ${valorPagar.toLocaleString('pt-BR')}`;
+            document.getElementById('log').prepend(li);
+        }
+
+        function calcularPorValorDesejado() {
+            const valorDesejado = parseFloat(document.getElementById('valorReceber').value);
+            if (isNaN(valorDesejado) || valorDesejado <= 0) {
+                document.getElementById('resultado').innerText = 'Digite um valor válido em R$.';
+                return;
+            }
+
+            const precoUnitario = precoCompraPorMil;
+            const ksLiquido = valorDesejado / precoUnitario;
+            const ksBruto = Math.ceil(ksLiquido / 0.95);
+            const rops = ksBruto * 1000;
+
+            document.getElementById('resultado').innerHTML = `
+                Você quer receber <strong>R$ ${valorDesejado.toLocaleString('pt-BR')}</strong><br>
+                🔹 Você deverá me enviar: <strong>${ksBruto.toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Após 5%, vou receber: <strong>${ksLiquido.toFixed(2).toLocaleString('pt-BR')}</strong>k ROPs<br>
+                🔹 Total: <strong>${rops.toLocaleString('pt-BR')}</strong> ROPs
+            `;
+
+            const li = document.createElement('li');
+            li.textContent = `Receber R$ ${valorDesejado.toLocaleString('pt-BR')} → enviar ${ksBruto.toLocaleString('pt-BR')}k ROPs`;
+            document.getElementById('log').prepend(li);
+        }
+
+        function atualizarPrecoCliente() {
+            const novoPreco = parseFloat(document.getElementById('precoROP').value);
+            if (!isNaN(novoPreco) && novoPreco > 0) {
+                precoClientePorMil = novoPreco;
+            }
+        }
+
+        function atualizarPrecoCompra() {
+            const novoPreco = parseFloat(document.getElementById('precoCompra').value);
+            if (!isNaN(novoPreco) && novoPreco > 0) {
+                precoCompraPorMil = novoPreco;
+            }
+        }
+
+        function limparHistorico() {
+            document.getElementById('log').innerHTML = '';
+        }
+    </script>
 </body>
 </html>
