@@ -110,8 +110,8 @@
 
         <div id="compra" class="section active">
             <div class="calc-group">
-                <label for="precoVENDA">Valor atual (VENDA) de 1k de Rops:</label>
-                <input type="number" id="precoVENDA" value="0.29" step="0.01" readonly>
+                <label for="precoROP">Valor atual (VENDA) de 1k de Rops:</label>
+                <input type="number" id="precoROP" value="0.29" step="0.01" readonly>
             </div>
             <div class="calc-group">
                 <label for="valor">Digite quanto quer investir, em R$:</label>
@@ -150,7 +150,7 @@
 
     <script>
         const taxa = 1.05;
-        let precoClientePorMil = parseFloat(document.getElementById('precoVENDA').value);
+        let precoClientePorMil = parseFloat(document.getElementById('precoROP').value);
         let precoCompraPorMil = parseFloat(document.getElementById('precoCompra').value);
 
         function mostrarSecao(secao) {
@@ -179,12 +179,12 @@
                 Você quer comprar <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong> ROPs<br>
                 🔹 Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong><br>
                 🔹 Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsBrutoArredondado.toLocaleString('pt-BR')})<br>
+                🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em><br>
                 🔹 Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong> ROPs<br>
-                🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em>
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong>, Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong>`;
+            li.innerHTML = `Compra: Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong>, Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, 🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em>, Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong>`;
             document.getElementById('log').prepend(li);
         }
 
@@ -210,7 +210,7 @@
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `Você vai pagar: <strong>R$ ${valor.toLocaleString('pt-BR')}</strong> (valor investido), Eu vou te entregar: <strong>${kRopsBrutoArredondado.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${Math.floor(ropsLiquido / 1000).toLocaleString('pt-BR')}k</strong>`;
+            li.innerHTML = `Compra: Você vai pagar: <strong>R$ ${valor.toLocaleString('pt-BR')}</strong> (valor investido), Eu vou te entregar: <strong>${kRopsBrutoArredondado.toLocaleString('pt-BR')}k</strong>, 🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em>, Após as taxas, você vai receber: <strong>${Math.floor(ropsLiquido / 1000).toLocaleString('pt-BR')}k</strong>`;
             document.getElementById('log').prepend(li);
         }
 
@@ -237,7 +237,7 @@
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `${ksBrutoExato.toLocaleString('pt-BR')}k ROPs → enviar <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, pago R$ ${valorPagarArredondado.toLocaleString('pt-BR')}`;
+            li.innerHTML = `Venda: ${ksBrutoExato.toLocaleString('pt-BR')}k ROPs → enviar <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, pago R$ ${valorPagarArredondado.toLocaleString('pt-BR')}`;
             document.getElementById('log').prepend(li);
         }
 
@@ -261,12 +261,12 @@
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `Receber R$ ${valorDesejado.toLocaleString('pt-BR')} → enviar <strong>${ksBruto.toLocaleString('pt-BR')}k</strong> ROPs`;
+            li.innerHTML = `Venda: Receber R$ ${valorDesejado.toLocaleString('pt-BR')} → enviar <strong>${ksBruto.toLocaleString('pt-BR')}k</strong> ROPs`;
             document.getElementById('log').prepend(li);
         }
 
         function atualizarPrecoCliente() {
-            const novoPreco = parseFloat(document.getElementById('precoVENDA').value);
+            const novoPreco = parseFloat(document.getElementById('precoROP').value);
             if (!isNaN(novoPreco) && novoPreco > 0) {
                 precoClientePorMil = novoPreco;
             }
