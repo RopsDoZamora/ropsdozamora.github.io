@@ -93,6 +93,17 @@
             margin-top: 15px;
             border-radius: 5px;
         }
+        #whatsappButton {
+            background: #25D366; /* Cor do WhatsApp */
+            color: white;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -106,7 +117,7 @@
         <div class="tabs">
             <button id="tab-compra" class="active" onclick="mostrarSecao('compra')">💸 Quero comprar</button>
             <button id="tab-venda" onclick="mostrarSecao('venda')">💰 Quero vender</button>
-        </div>
+            </div>
 
         <div id="compra" class="section active">
             <div class="calc-group">
@@ -145,27 +156,40 @@
         </div>
 
         <div class="resultado" id="resultado"></div>
+        <button id="whatsappButton" onclick="enviarParaWhatsApp()" style="display: none;">
+            Confirmar e Enviar para WhatsApp
+        </button>
         <div class="historico" id="historico"><strong>Histórico:</strong><ul id="log"></ul></div>
     </div>
 
     <script>
         const taxa = 1.05;
+        // Inicializa os valores com base nos campos de input
         let precoClientePorMil = parseFloat(document.getElementById('precoROP').value);
         let precoCompraPorMil = parseFloat(document.getElementById('precoCompra').value);
+        let ultimoMensagemWhatsApp = ''; // Variável para armazenar a última mensagem gerada para o WhatsApp
 
+        // Função para exibir a seção ativa
         function mostrarSecao(secao) {
             document.getElementById('compra').classList.remove('active');
             document.getElementById('venda').classList.remove('active');
+            // Removida a referência à seção de lucro
             document.getElementById('tab-compra').classList.remove('active');
             document.getElementById('tab-venda').classList.remove('active');
+            // Removida a referência à aba de lucro
             document.getElementById(secao).classList.add('active');
             document.getElementById(`tab-${secao}`).classList.add('active');
+            // Esconde o botão do WhatsApp ao trocar de aba, até que um novo cálculo seja feito
+            document.getElementById('whatsappButton').style.display = 'none';
+            document.getElementById('resultado').innerHTML = ''; // Limpa o resultado ao trocar de aba
         }
 
+        // Função para calcular ROPs a comprar com base no valor a pagar
         function calcularValorPorKs() {
             const ksLiquidoDesejado = parseFloat(document.getElementById('ks').value);
             if (isNaN(ksLiquidoDesejado) || ksLiquidoDesejado <= 0) {
                 document.getElementById('resultado').innerText = 'Digite um valor válido de k ROPs que você quer receber.';
+                document.getElementById('whatsappButton').style.display = 'none';
                 return;
             }
 
@@ -179,19 +203,25 @@
                 Você quer comprar <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong> ROPs<br>
                 🔹 Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong><br>
                 🔹 Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong> ROPs (${ropsBrutoArredondado.toLocaleString('pt-BR')})<br>
-                🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em><br>
                 🔹 Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong> ROPs<br>
+                🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em>
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `Compra: Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong>, Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, 🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em>, Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong>`;
+            li.innerHTML = `<strong>Compra:</strong> Você vai pagar: <strong>R$ ${valorTotal.toLocaleString('pt-BR')}</strong>, Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${ksLiquidoDesejado.toLocaleString('pt-BR')}k</strong>, com o valor de cada k considerado a <strong>R$ ${precoClientePorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`;
             document.getElementById('log').prepend(li);
+
+            // Prepara a mensagem para o WhatsApp
+            ultimoMensagemWhatsApp = `Olá Zamora, quero comprar ${ksLiquidoDesejado.toLocaleString('pt-BR')}k ROPs. Com o k a R$ ${precoClientePorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, vou pagar aproximadamente R$ ${valorTotal.toLocaleString('pt-BR')}. Você me entregará ${ksBrutoArredondado.toLocaleString('pt-BR')}k ROPs. Favor confirmar.`;
+            document.getElementById('whatsappButton').style.display = 'block';
         }
 
+        // Função para calcular ROPs a comprar com base no valor investido
         function calcularROPs() {
             const valor = parseFloat(document.getElementById('valor').value);
             if (isNaN(valor) || valor <= 0) {
                 document.getElementById('resultado').innerText = 'Digite um valor válido em R$.';
+                document.getElementById('whatsappButton').style.display = 'none';
                 return;
             }
 
@@ -210,14 +240,20 @@
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `Compra: Você vai pagar: <strong>R$ ${valor.toLocaleString('pt-BR')}</strong> (valor investido), Eu vou te entregar: <strong>${kRopsBrutoArredondado.toLocaleString('pt-BR')}k</strong>, 🪙 <em>${Math.floor(ropsBrutoArredondado / 100000)} Moedas Roxas e ${Math.floor((ropsBrutoArredondado % 100000) / 1000)} Moedas Laranjas</em>, Após as taxas, você vai receber: <strong>${Math.floor(ropsLiquido / 1000).toLocaleString('pt-BR')}k</strong>`;
+            li.innerHTML = `<strong>Compra:</strong> Você vai pagar: <strong>R$ ${valor.toLocaleString('pt-BR')}</strong> (valor investido), Eu vou te entregar: <strong>${kRopsBrutoArredondado.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${Math.floor(ropsLiquido / 1000).toLocaleString('pt-BR')}k</strong>, com o valor de cada k considerado a <strong>R$ ${precoClientePorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`;
             document.getElementById('log').prepend(li);
+
+            // Prepara a mensagem para o WhatsApp
+            ultimoMensagemWhatsApp = `Olá Zamora, quero investir R$ ${valor.toLocaleString('pt-BR')}. Com o k a R$ ${precoClientePorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, vou receber aproximadamente ${Math.floor(ropsLiquido / 1000).toLocaleString('pt-BR')}k ROPs. Você me entregará ${kRopsBrutoArredondado.toLocaleString('pt-BR')}k ROPs. Favor confirmar.`;
+            document.getElementById('whatsappButton').style.display = 'block';
         }
 
+        // Função para calcular o valor a receber com base na quantidade de ROPs a vender
         function calcularReais() {
             const ropsInformado = parseFloat(document.getElementById('rops').value) * 1000;
             if (isNaN(ropsInformado) || ropsInformado <= 0) {
                 document.getElementById('resultado').innerText = 'Digite uma quantidade válida de ROPs.';
+                document.getElementById('whatsappButton').style.display = 'none';
                 return;
             }
 
@@ -237,14 +273,20 @@
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `Venda: ${ksBrutoExato.toLocaleString('pt-BR')}k ROPs → enviar <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, pago R$ ${valorPagarArredondado.toLocaleString('pt-BR')}`;
+            li.innerHTML = `<strong>Venda:</strong> Você vai pagar: <strong>R$ ${valorPagarArredondado.toLocaleString('pt-BR')}</strong>, Eu vou te entregar: <strong>${ksBrutoArredondado.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${ksLiquidoExato.toLocaleString('pt-BR')}k</strong>, com o valor de cada k considerado a <strong>R$ ${precoCompraPorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`;
             document.getElementById('log').prepend(li);
+
+            // Prepara a mensagem para o WhatsApp
+            ultimoMensagemWhatsApp = `Olá Zamora, quero vender ${ksBrutoExato.toLocaleString('pt-BR')}k ROPs. Com o k a R$ ${precoCompraPorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, quero receber R$ ${valorPagarArredondado.toLocaleString('pt-BR')}. Preciso te enviar ${ksBrutoArredondado.toLocaleString('pt-BR')}k ROPs. Favor confirmar.`;
+            document.getElementById('whatsappButton').style.display = 'block';
         }
 
+        // Função para calcular ROPs a vender com base no valor desejado a receber
         function calcularPorValorDesejado() {
             const valorDesejado = parseFloat(document.getElementById('valorReceber').value);
             if (isNaN(valorDesejado) || valorDesejado <= 0) {
                 document.getElementById('resultado').innerText = 'Digite um valor válido em R$.';
+                document.getElementById('whatsappButton').style.display = 'none';
                 return;
             }
 
@@ -261,27 +303,56 @@
             `;
 
             const li = document.createElement('li');
-            li.innerHTML = `Venda: Receber R$ ${valorDesejado.toLocaleString('pt-BR')} → enviar <strong>${ksBruto.toLocaleString('pt-BR')}k</strong> ROPs`;
+            li.innerHTML = `<strong>Venda:</strong> Você vai pagar: <strong>R$ ${valorDesejado.toLocaleString('pt-BR')}</strong>, Eu vou te entregar: <strong>${ksBruto.toLocaleString('pt-BR')}k</strong>, Após as taxas, você vai receber: <strong>${ksLiquido.toLocaleString('pt-BR')}k</strong>, com o valor de cada k considerado a <strong>R$ ${precoCompraPorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`;
             document.getElementById('log').prepend(li);
+
+            // Prepara a mensagem para o WhatsApp
+            ultimoMensagemWhatsApp = `Olá Zamora, quero vender ROPs para receber R$ ${valorDesejado.toLocaleString('pt-BR')}. Com o k a R$ ${precoCompraPorMil.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, preciso enviar ${ksBruto.toLocaleString('pt-BR')}k ROPs. Favor confirmar.`;
+            document.getElementById('whatsappButton').style.display = 'block';
         }
 
-        function atualizarPrecoCliente() {
-            const novoPreco = parseFloat(document.getElementById('precoROP').value);
-            if (!isNaN(novoPreco) && novoPreco > 0) {
-                precoClientePorMil = novoPreco;
-            }
-        }
+        // As funções atualizarPrecoCliente e atualizarPrecoCompra não são mais necessárias
+        // pois os campos são readonly e os valores são lidos uma única vez no onload.
+        function atualizarPrecoCliente() {}
+        function atualizarPrecoCompra() {}
 
-        function atualizarPrecoCompra() {
-            const novoPreco = parseFloat(document.getElementById('precoCompra').value);
-            if (!isNaN(novoPreco) && novoPreco > 0) {
-                precoCompraPorMil = novoPreco;
-            }
-        }
-
+        // Função para limpar o histórico
         function limparHistorico() {
             document.getElementById('log').innerHTML = '';
         }
+
+        // A função calcularLucro foi removida.
+
+        // Função para enviar a mensagem para o WhatsApp
+        function enviarParaWhatsApp() {
+            if (ultimoMensagemWhatsApp) {
+                const numeroWhatsApp = '5511947185134'; // Seu número de WhatsApp
+                const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(ultimoMensagemWhatsApp)}`;
+                window.open(url, '_blank');
+            } else {
+                // Usando um modal simples para exibir a mensagem, já que alert() não é permitido.
+                // Você pode estilizar isso para ser um modal mais amigável.
+                const resultadoDiv = document.getElementById('resultado');
+                resultadoDiv.innerHTML = '<div style="background-color: #ffdddd; border: 1px solid #ff0000; padding: 10px; border-radius: 5px;">Nenhum cálculo foi realizado para enviar a mensagem.</div>';
+                resultadoDiv.style.display = 'block';
+            }
+        }
+
+        // Garante que os valores iniciais sejam lidos corretamente ao carregar a página
+        window.onload = function() {
+            let precoVendaElement = document.getElementById('precoROP');
+            if (precoVendaElement) {
+                precoClientePorMil = parseFloat(precoVendaElement.value);
+            }
+
+            let precoCompraElement = document.getElementById('precoCompra');
+            if (precoCompraElement) {
+                precoCompraPorMil = parseFloat(precoCompraElement.value);
+            }
+            
+            // Esconde o botão do WhatsApp no início
+            document.getElementById('whatsappButton').style.display = 'none';
+        };
     </script>
 </body>
 </html>
